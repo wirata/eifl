@@ -1,0 +1,177 @@
+{% extends 'EiflAdminBundle::layout.html.twig' %}
+
+{% block title 'EIFL Admin Competition' %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" type="text/css" href="{{ asset('bundles/eifladmin/css/administration.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+	$(document).ready(function() {
+		{% if edit_func is defined %}
+			$('#edit_comp').show();
+			$(".popup_window").show("fade");
+		{% endif %}
+		$("#close_button").click(function() {
+			$(".popup_window").hide("fade");
+			$(".form_admin").hide();
+		});
+		$('#add_new_comp').click(function() {
+			$('#new_comp').show();
+			$(".popup_window").show("fade");
+		});
+	});
+{% endblock %}
+
+{% block admin_content %}
+	<center>
+		<h3>Competition</h3>
+		<div class="administration_form prize_form">
+			<form>
+				<p style="width:800px;text-align:right;"><input type="button" id="add_new_comp" value="Create New Competition"/></p>
+				<div style="width:800px;overflow-x:scroll;height:auto">
+					<table class="administration_table" border="0" cellpadding="0" cellspacing="1" width="800">
+						<tr>
+							<th>Competition(fee)</th>
+							<th>location</th>
+							<th>Date</th>
+							<th>Time</th>
+							<th>Type</th>
+							<th>Total Competitor</th>
+							<th>1st Prize</th>
+							<th>2nd Prize</th>
+							<th>3th Prize</th>
+							<th>Actions</th>
+						</tr>
+						{% if competition_list is defined %}
+							{% for competition in competition_list %}
+								<tr>
+									<td>{{ competition.name }}({% if competition.fee == 'Free' %}{{ competition.fee }}{% else %}{{ competition.fee|number_format }}{% endif %})</td>
+									<td>{{ competition.location }}</td>
+									<td>{{ competition.date.format('d/m/Y') }}</td>
+									<td>{{ competition.startTime.format('H:i') }}-{{ competition.endTime.format('H:i') }}</td>
+									<td>{% if competition.type == 'TO' %}Try Out{% else %}Public Competition{% endif %}</td>
+									<td></td>
+									<td>{{ competition.reward.firstWinner }}</td>
+									<td>{{ competition.reward.secondWinner }}</td>
+									<td>{{ competition.reward.thirdWinner }}</td>
+									<td><a href="{{ path('eifl_admin_competition') }}?id_comp={{ competition.id }}&func=edit">Edit</a>/<a href="{{ path('eifl_admin_competition') }}?id_comp={{ competition.id }}&func=rm">Remove</a>/<a href="{{ path('eifl_admin_competition') }}?id_comp={{ competition.id }}&func=add_c">Add Competitor</a></td>
+								</tr>
+							{% endfor %}
+						{% endif %}
+					</table>
+				</div>
+			</form>
+		</div>
+	</center>
+{% endblock %}
+
+{% block popup %}
+	<div id="close_button"></div>
+	<div style="min-height:350px;text-align:left;display:none;clear:both;" id="new_comp" class="form_admin">
+		<center>
+		{{ form_start(new_comp_form) }}
+			<table border="0">
+				{{ form_errors(new_comp_form) }}
+				<tr>
+					<td>{{ form_label(new_comp_form.name) }}</td>
+					<td>{{ form_widget(new_comp_form.name) }}{{ form_errors(new_comp_form.name) }}</td>
+				</tr>
+				<tr>
+					<td>{{ form_label(new_comp_form.type) }}</td>
+					<td>{{ form_widget(new_comp_form.type) }}{{ form_errors(new_comp_form.type) }}</td>
+				</tr>
+				<tr>
+					<td>{{ form_label(new_comp_form.location) }}</td>
+					<td>{{ form_widget(new_comp_form.location) }}{{ form_errors(new_comp_form.location) }}</td>
+				</tr>
+				<tr>
+					<td>{{ form_label(new_comp_form.fee) }}</td>
+					<td>{{ form_widget(new_comp_form.fee) }}{{ form_errors(new_comp_form.fee) }}</td>
+				</tr>
+				<tr>
+					<td>{{ form_label(new_comp_form.date) }}</td>
+					<td>{{ form_widget(new_comp_form.date) }}{{ form_errors(new_comp_form.date) }}</td>
+				</tr>
+				<tr>
+					<td>{{ form_label(new_comp_form.stime) }}</td>
+					<td>{{ form_widget(new_comp_form.stime) }}{{ form_errors(new_comp_form.stime) }}</td>
+				</tr>
+				<tr>
+					<td>{{ form_label(new_comp_form.etime) }}</td>
+					<td>{{ form_widget(new_comp_form.etime) }}{{ form_errors(new_comp_form.etime) }}</td>
+				</tr>
+				<tr>
+					<td>{{ form_label(new_comp_form.firstwinner) }}</td>
+					<td>{{ form_widget(new_comp_form.firstwinner) }}{{ form_errors(new_comp_form.firstwinner) }}</td>
+				</tr>
+				<tr>
+					<td>{{ form_label(new_comp_form.secondwinner) }}</td>
+					<td>{{ form_widget(new_comp_form.secondwinner) }}{{ form_errors(new_comp_form.secondwinner) }}</td>
+				</tr>
+				<tr>
+					<td>{{ form_label(new_comp_form.thirdwinner) }}</td>
+					<td>{{ form_widget(new_comp_form.thirdwinner) }}{{ form_errors(new_comp_form.thirdwinner) }}</td>
+				</tr>
+				<tr>
+					<td colspan='2' style="text-align:center;">{{ form_widget(new_comp_form.save) }}{{ form_widget(new_comp_form._token) }}</td>
+				</tr>
+			</table>
+		{{ form_end(new_comp_form) }}
+		</center>
+	</div>
+	{% if edit_comp_form is defined %}
+	<div style="min-height:350px;text-align:left;display:none;clear:both;" id="edit_comp" class="form_admin">
+		<center>
+		{{ form_start(edit_comp_form) }}
+			<table border="0">
+				{{ form_errors(edit_comp_form) }}
+				<tr>
+					<td>{{ form_label(edit_comp_form.name) }}</td>
+					<td>{{ form_widget(edit_comp_form.name) }}{{ form_errors(edit_comp_form.name) }}</td>
+				</tr>
+				<tr>
+					<td>{{ form_label(edit_comp_form.type) }}</td>
+					<td>{{ form_widget(edit_comp_form.type) }}{{ form_errors(edit_comp_form.type) }}</td>
+				</tr>
+				<tr>
+					<td>{{ form_label(edit_comp_form.location) }}</td>
+					<td>{{ form_widget(edit_comp_form.location) }}{{ form_errors(edit_comp_form.location) }}</td>
+				</tr>
+				<tr>
+					<td>{{ form_label(edit_comp_form.fee) }}</td>
+					<td>{{ form_widget(edit_comp_form.fee) }}{{ form_errors(edit_comp_form.fee) }}</td>
+				</tr>
+				<tr>
+					<td>{{ form_label(edit_comp_form.date) }}</td>
+					<td>{{ form_widget(edit_comp_form.date) }}{{ form_errors(edit_comp_form.date) }}</td>
+				</tr>
+				<tr>
+					<td>{{ form_label(edit_comp_form.stime) }}</td>
+					<td>{{ form_widget(edit_comp_form.stime) }}{{ form_errors(edit_comp_form.stime) }}</td>
+				</tr>
+				<tr>
+					<td>{{ form_label(edit_comp_form.etime) }}</td>
+					<td>{{ form_widget(edit_comp_form.etime) }}{{ form_errors(edit_comp_form.etime) }}</td>
+				</tr>
+				<tr>
+					<td>{{ form_label(edit_comp_form.firstwinner) }}</td>
+					<td>{{ form_widget(edit_comp_form.firstwinner) }}{{ form_errors(edit_comp_form.firstwinner) }}</td>
+				</tr>
+				<tr>
+					<td>{{ form_label(edit_comp_form.secondwinner) }}</td>
+					<td>{{ form_widget(edit_comp_form.secondwinner) }}{{ form_errors(edit_comp_form.secondwinner) }}</td>
+				</tr>
+				<tr>
+					<td>{{ form_label(edit_comp_form.thirdwinner) }}</td>
+					<td>{{ form_widget(edit_comp_form.thirdwinner) }}{{ form_errors(edit_comp_form.thirdwinner) }}</td>
+				</tr>
+				<tr>
+					<td colspan='2' style="text-align:center;">{{ form_widget(edit_comp_form.save) }}{{ form_widget(edit_comp_form._token) }}</td>
+				</tr>
+			</table>
+		{{ form_end(edit_comp_form) }}
+		</center>
+	</div>
+	{% endif %}
+{% endblock %}

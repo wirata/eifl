@@ -1,0 +1,78 @@
+{% extends 'EiflMemberBundle::layout.html.twig' %}
+
+{% block title 'Eifl - Member Event' %}
+
+{% block javascripts %}
+	$(function() {
+		$('.tab').tabs();
+	});
+{% endblock %}
+
+{% block content %}
+	<div class="tab">
+		<ul>
+			<li style="display:inline;"><a href="#tab_upcoming">Upcoming Events</a></li>
+			<li style="display:inline;"><a href="#tab_result">Event Result</a></li>
+		</ul>
+		<div id="tab_upcoming">
+			<center><h1>Upcoming Events</h1></center>
+			{% if comp_list is defined %}
+				{% for comp in comp_list %}
+				<div style="position:relative;float:left;width:300;margin:20px 50px;background:rgb(125,175,205);">
+					<center>
+						<table border="0" style="margin-bottom:15px;">
+							<tr>
+								<th colspan="2">Competition Info</th>
+							</tr>
+							<tr>
+								<th>Competition Name</th>
+								<td>{{ comp.name }}</td>
+							</tr>
+							<tr>
+								<th>Competition Type</th>
+								<td>{% if comp.type == 'TO' %}Try Out{% else %}Public Competition{% endif %}</td>
+							</tr>
+							<tr>
+								<th>Date</th>
+								<td>{{ comp.date.format('d-m-Y') }}</td>
+							</tr>
+							<tr>
+								<th>Time</th>
+								<td>{{ comp.startTime.format('H:i') }}-{{ comp.endTime.format('H:i') }}</td>
+							</tr>
+							<tr>
+								<th>Location</th>
+								<td>{{ comp.location }}</td>
+							</tr>
+							<tr>
+								<th>Registration Fee</th>
+								<td>{% if 'free' in comp.fee|lower %}{{ comp.fee }}{% else %}{{ comp.fee|number_format }}{% endif %}</td>
+							</tr>
+						</table>
+
+						<table border="0">
+							<tr>
+								<th colspan="3">Winners Reward</th>
+							</tr>
+							<tr>
+								<th>1st Winner</th>
+								<th>2nd Winner</th>
+								<th>3th Winner</th>
+							</tr>
+							<tr>
+								<td>{{ comp.reward.firstWinner }}</td>
+								<td>{{ comp.reward.secondWinner }}</td>
+								<td>{{ comp.reward.thirdWinner }}</td>
+							</tr>
+						</table>
+					</center>
+				</div>
+				{% endfor %}
+			{% endif %}
+		</div>
+	</div>
+{% endblock %}
+
+{% block popup %}
+	<div id="close_button"></div>
+{% endblock %}

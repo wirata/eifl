@@ -1,0 +1,64 @@
+<html>
+	<head>
+		<title>{% block title %}{% endblock %}</title>
+		<link rel="stylesheet" type="text/css" href="{{ asset('bundles/eifladmin/css/base.css') }}">
+		{% block stylesheets %}{% endblock %}
+		<script type="text/javascript" src="{{ asset('components/jquery/jquery.js') }}"></script>
+		{% block newscripts %}{% endblock %}
+		<script type="text/javascript" src="{{ asset('components/jquery-ui/ui/jquery-ui.js') }}"></script>
+		<script type="text/javascript" src="{{ asset('components/jquery-ui/ui/jquery.ui.menu.js') }}"></script>
+		<script>{% block javascripts %}{% endblock %}</script>
+		<script>
+			$(function() {
+				$('.admin_menu').menu();
+			})
+		</script>
+	</head>
+	<body>
+		<div class="popup_window">
+			<div class="popup_content">
+				{% block popup %}{% endblock %}
+			</div>
+		</div>
+		<div class="admin_top">
+			<div class="left_menu">
+				<ul class="admin_menu">
+					{% if is_granted('ROLE_ADMIN') %}
+						<a href="{{ path('eifl_admin_administration') }}"><li>Administration</li></a>
+					{% elseif is_granted('ROLE_ADM') %}
+						<a href="{{ path('eifl_admin_usermember') }}"><li>User Member</li></a>
+					{% endif %}
+					{% if is_granted('ROLE_ADMIN') %}
+						<a href="{{ path('eifl_admin_program') }}"><li>Program</li></a>
+					{% endif %}
+					{% if is_granted('ROLE_ADM') %}
+						<a href="{{ path('eifl_admin_class_adm') }}"><li>Class</li></a>
+					{% endif %}
+					{% if is_granted('ROLE_TEACHER') or is_granted('ROLE_ADMIN') %}
+						<a href="{{ path('eifl_admin_score') }}"><li>Students Score</li></a>
+					{% endif %}
+					<a href="{{ path('eifl_admin_prize') }}"><li>Prize</li></a>
+					<a href="{{ path('eifl_admin_point') }}"><li>Point</li></a>
+					<a href="{{ path('eifl_admin_prizeReq') }}"><li>Redeem Prize</li></a>
+					<a href="{{ path('eifl_admin_competition') }}"><li>Competition</li></a>
+					<a href="{{ path('eifl_admin_page') }}"><li>Pages</li></a>
+				</ul>
+			</div>
+			<div class="admin_content">
+				{% block admin_content %}{% endblock %}
+			</div>
+		</div>
+		<div class="admin_bottom">
+			<div id="logo"></div>
+			<div id="admin_info">
+				<!--<a href="{{ path('hwi_oauth_service_redirect',{service:'facebook'}) }}">Connect Facebook</a>-->
+				{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_ADM') or is_granted('ROLE_TEACHER') %}
+	                {{ 'layout.logged_in_as'|trans({'%username%': app.user.username}, 'FOSUserBundle') }} |
+	                <a href="{{ path('fos_user_security_logout') }}">
+	                    {{ 'layout.logout'|trans({}, 'FOSUserBundle') }}
+	                </a>
+	            {% endif %}
+			</div>
+		</div>
+	</body>
+</html>

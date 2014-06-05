@@ -1,0 +1,98 @@
+body,div,input,table,form,p,ul,textarea,img {
+	padding: 0px;
+	margin: 0px;
+}
+ul,ol,li{
+	list-style: none;
+}
+a,a:visited{
+	text-decoration: none;
+}
+.header{
+	background: #FFD996 url('../images/header_bottom.png') left bottom repeat-x;
+	height: 100px;
+}
+#logo{
+	float: left;
+	background: url('../images/LogoEIFL.png') left top no-repeat;
+	background-size: 300px 100px;
+	width: 300px;
+	height: 100px;
+}
+#menu a, a:visited{
+	color:#FFF;
+}
+#menu{
+	float: left;
+	margin-top: 45px;
+	margin-bottom: 5px;
+	max-width: 1065px;
+	height: 50px;
+	background: url('../images/menu_bg.jpg') no-repeat;
+	background-size: 100% 50px;
+	color:#FFF;
+}
+.main_menu{
+	float:left;
+	line-height: 50px;
+}
+.main_menu li:hover{
+	color: yellow;
+}
+.main_menu li{
+	float: left;
+	padding: 0px 50px;
+	font-weight: bold;
+	background:url('../images/menu_gap.jpg') no-repeat right top;
+}
+.drop_menu{
+	position: absolute;
+	background: #783f04;
+	opacity:0.8;
+	filter:alpha(opacity=80);
+}
+.drop_menu li{
+	background: none;
+	line-height: 15px;
+	float: left;
+	clear: both;
+	width: 230px;
+	margin-left: 0px;
+	margin-right:0px; 
+	padding: 10px 15px;
+}
+.drop_menu li:hover{
+	color: blue;
+	background: yellow;
+}
+#login{
+	float: right;
+	margin:60px 60px 0px 0px;
+}
+
+.main_body{
+	min-height: 600px;
+	padding-top: 5px;
+}
+
+.footer{
+	bottom: 0px;
+	height: 50px;
+	background: #FFD996 url('../images/footer_top.png') left top repeat-x;
+	text-align: center;
+	line-height: 50px;
+}
+.banner{
+	position: absolute;
+}
+.main_content{
+	width:1150px;
+	min-height: 600px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 10px;
+	background: #DDDDDD;
+	opacity: 0.6;
+	filter:alpha(opacity=60);
+	border-radius: 10px;
+}

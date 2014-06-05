@@ -1,0 +1,3 @@
+eifl_main_homepage:
+    pattern:  /
+    defaults: { _controller: EiflMainBundle:Default:index }

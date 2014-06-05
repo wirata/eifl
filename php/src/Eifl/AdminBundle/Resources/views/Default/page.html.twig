@@ -1,0 +1,58 @@
+{% extends 'EiflAdminBundle::layout.html.twig' %}
+
+{% block title 'EIFL Admin Page' %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" type="text/css" href="{{ asset('bundles/eifladmin/css/administration.css') }}">
+	<style>
+		.tinymce_textarea{
+			height:300px;
+		}
+	</style>
+{% endblock %}
+
+{% block newscripts %}
+	<script src="{{ asset('bundles/eifladmin/js/tinymce/js/tinymce/tinymce.min.js')}}"></script>
+	<script>
+		tinymce.init({
+			menubar: false,
+			selector: "textarea",
+			plugins: [
+					"advlist autolink autosave link image lists charmap print preview hr anchor pagebreak spellchecker",
+					"searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking",
+					"table contextmenu directionality emoticons template textcolor paste fullpage textcolor save"
+					],
+
+			toolbar1: "newdocument | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | styleselect formatselect fontselect fontsizeselect",
+			toolbar2: "cut copy paste | searchreplace | bullist numlist | outdent indent blockquote | undo redo | link unlink anchor image media code | inserttime preview | forecolor backcolor",
+			toolbar3: "table | hr removeformat | subscript superscript | charmap emoticons | print fullscreen | ltr rtl | visualchars visualblocks nonbreaking  pagebreak restoredraft",
+		});
+	</script>
+</script>
+{% endblock %}
+
+{% block javascripts %}
+	
+{% endblock %}
+
+{% block admin_content %}
+	<center>
+		<h3>Page</h3>
+		<div class="administration_form prize_form">
+			{{ form_start(page_form) }}
+				{{ form_label(page_form.pageTitle) }}
+				{{ form_widget(page_form.pageTitle) }}
+				{{ form_errors(page_form.pageTitle) }}
+
+				{{ form_widget(page_form.contenttext,{'attr':{'class':'tinymce_textarea'}}) }}
+				{{ form_errors(page_form.contenttext) }}
+
+				{{ form_widget(page_form.save) }} {{ form_widget(page_form.reset) }}
+			{{ form_end(page_form) }}
+		</div>
+	</center>
+{% endblock %}
+
+{% block popup %}
+	<div id="close_button"></div>
+{% endblock %}

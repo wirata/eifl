@@ -1,0 +1,52 @@
+{% extends 'EiflAdminBundle::layout.html.twig' %}
+
+{% block title 'EIFL Admin Point' %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" type="text/css" href="{{ asset('bundles/eifladmin/css/administration.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+	$(document).ready(function() {
+		$('#form_class').change(function() {
+			$('.student_opt').remove();
+			var id_class = $(this).val();
+			$.ajax({
+				url: "{{ path('eifl_admin_post_point_member') }}",
+				data: "id_class="+id_class,
+				type: "POST",
+				dataType:'json',
+				success: function(data) {
+					var i = 0;
+					while(data){
+						var id = data[i]['id'];
+						var name = data[i]['name'];
+
+						$('#student-select').append("<option class='student_opt' value='"+id+"'>"+name+"</option>");
+						i++;
+					}
+				}
+			});
+		});
+	});
+{% endblock %}
+
+{% block admin_content %}
+	<center>
+		<h3>Point</h3>
+		<div class="administration_form prize_form">
+			{{ form_start(class_select) }}
+				{{ form_row(class_select.class) }}
+				<label>Student</label>
+				<select name="student-select" id="student-select" required="required">
+					<option seleted="selected" value>Choose a student</option>
+				</select></br>
+				<label>Point</label> <input type="number" name="point" id="point_add" min="0" max="100" value="0"/>
+			{{ form_end(class_select)}}
+		</div>
+	</center>
+{% endblock %}
+
+{% block popup %}
+	<div id="close_button"></div>
+{% endblock %}

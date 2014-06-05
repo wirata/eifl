@@ -1,0 +1,110 @@
+{% extends 'EiflAdminBundle::layout.html.twig' %}
+
+{% block title 'EIFL Admin Prize' %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" type="text/css" href="{{ asset('bundles/eifladmin/css/administration.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+	$(document).ready(function() {
+		{% if edit_p is defined %}
+			$('.edit_form').show();
+    		$(".popup_window").show("fade");
+		{% endif %}
+		$("#close_button").click(function() {
+			$(".popup_window").hide("fade");
+			$(".form_admin").hide();
+		});
+		$('.rm_p').click(function() {
+			if(!confirm('Are you sure to remove this prize?')){
+				return false;
+			}
+		});
+	});
+{% endblock %}
+
+{% block admin_content %}
+	<center>
+		<h3>Redeem Prize Request</h3>
+		<div class="administration_form prize_form">
+			<div>
+				<table class="administration_table" border="0" cellpadding="0" cellspacing="1" width="600">
+					<tr>
+						<th>No</th>
+						<th>Student Name</th>
+						<th>Item</th>
+						<th>Point/Item</th>
+						<th>Total Unit Request</th>
+						<th>Total Point</th>
+						<th>Date Request</th>
+						<th>Status</th>
+						<th>Actions</th>
+					</tr>
+					{% if data is defined %}
+						{% set i = 1 %} 
+						{% for req in data %}
+							{% set tot_point = req.unit * req.point %}
+							{% if req != null %}
+								<tr>
+									<td style="text-align:center;">{{ i }}</td>
+									<td style="text-align:center;">{{ req.member.getCompleteName }}({{ req.member.point }})</td>
+									<td style="text-align:center;">{{ req.prize }}</td>
+									<td style="text-align:center;">{{ req.point }}</td>
+									<td style="text-align:center;">{{ req.unit }}</td>
+									<td style="text-align:center;">{{ tot_point }}</td>
+									<td style="text-align:center;">{{ req.requestDate.format('d-m-Y H:i:s') }}</td>
+									<td style="text-align:center;">{{ req.status }}</td>
+									<td style="text-align:center;"><a href="{{ path('eifl_admin_prizeReq') }}?id={{ req.id }}&act=Approve">Approve</a>/<a href="{{ path('eifl_admin_prizeReq') }}?id={{ req.id }}&act=Reject">Reject</a></td>
+								</tr>
+								{% set i = i + 1 %}
+							{% endif %}
+						{% endfor %}
+					{% endif %}
+				</table>
+			</div>
+		</div>
+	</center>
+{% endblock %}
+
+{% block popup %}
+	<div id="close_button"></div>
+	{% if edit_form is defined %}
+	<div class="edit_form form_admin">
+		<center>
+			<h3>Edit Prize</h3>
+
+			{{ form_start(edit_form) }}
+			    {{ form_errors(edit_form) }}
+
+			    <div>
+					{{ form_row(edit_form.image,{'required':false}) }}
+				</div>
+
+				<div>
+					{{ form_label(edit_form.name) }}
+				    {{ form_errors(edit_form.name) }}
+				    {{ form_widget(edit_form.name) }}
+				</div>
+
+				<div>
+					{{ form_label(edit_form.point) }}
+				    {{ form_errors(edit_form.point) }}
+				    {{ form_widget(edit_form.point) }}
+				</div>
+
+				<div>
+					{{ form_label(edit_form.unit) }}
+				    {{ form_errors(edit_form.unit) }}
+				    {{ form_widget(edit_form.unit) }}
+				</div>
+
+				<div>
+					{{ form_widget(edit_form.save) }}
+				</div>
+			{{ form_widget(edit_form._token) }}
+			{{ form_end(edit_form) }}
+		</center>
+	</div>
+	{% endif %}
+{% endblock %}

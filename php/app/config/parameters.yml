@@ -1,0 +1,14 @@
+# This file is auto-generated during the composer install
+parameters:
+    database_driver: pdo_mysql
+    database_host: 127.2.144.130
+    database_port: 3306
+    database_name: EIFL
+    database_user: admindgYisis
+    database_password: 26r-f2_ZrmGw
+    mailer_transport: smtp
+    mailer_host: 127.0.0.1
+    mailer_user: null
+    mailer_password: null
+    locale: en
+    secret: a3d4cab54ddb8ecb9edee2f533d84862da9038a5

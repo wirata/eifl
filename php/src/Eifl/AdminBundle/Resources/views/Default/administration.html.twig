@@ -1,0 +1,174 @@
+{% extends 'EiflAdminBundle::layout.html.twig' %}
+
+{% block title 'EIFL Admin Administration' %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" type="text/css" href="{{ asset('bundles/eifladmin/css/administration.css') }}">
+	<style>
+		.form_admin{
+			display:none;
+		}
+	</style>
+{% endblock %}
+{% block javascripts %}
+    $(document).ready(function() {
+    	{% if edit is defined %}
+    		$('.edit_form').show();
+    		$(".popup_window").show("fade");
+    	{% endif %}
+		$("#new_admin").click(function() {
+			$(".new_form").show();
+			$(".popup_window").show("fade");
+		});
+		$('#new_pass').click(function() {
+			if($(this).prop('checked')){
+				$('#pass_edit').show();
+			}
+			else{
+				$('#form_password_first').val("");
+				$('#form_password_second').val("");
+				$('#pass_edit').hide();
+			}
+		});
+		$('#search_button').click(function() {
+			var search = $('#search_box').val();
+			var url = "{{ path('eifl_admin_administration') }}?admin="+search;
+
+			window.location=url;
+		});
+        $(".delete").click(function() {
+            if(!confirm("Are you sure to delete this admin?")){
+                return false;
+            }
+        });
+		$("#close_button").click(function() {
+			$(".popup_window").hide("fade");
+			$(".form_admin").hide();
+		});
+	});
+{% endblock %}
+
+{% block admin_content %}
+	<center>
+		<h3>Administration</h3>
+		<div class="administration_form">
+			<form class="admin_form">
+				<p style="height:25px;margin-bottom:5px;">
+					<input type="button" name="new_admin" id="new_admin" value="Create New Admin" style="float:left;" />
+					<input type="button" name="search_button" id="search_button" value="Search" style="float:right;"/>
+					<input type="text" name="admin" id="search_box" placeholder="Search Admin" style="float:right;margin:2px;height:20px;"/>
+				</p>
+				<div>
+					<table class="administration_table" border="0" cellpadding="0" cellspacing="1" width="600">
+						<tr>
+							<th>Admin Name</th>
+							<th>Position</th>
+							<th>Status</th>
+							<th>Action</th>
+						</tr>
+						{% if admin_list is defined %}
+							{% for admin in admin_list %}
+								{% if admin != null %}
+									<tr>
+										<td>{{ admin.username }}</td>
+		                                <td>{{ admin.userAdminType.position }}</td>
+		                                {% if admin.enabled == 1 %}
+		                                	<td>Active</td>
+		                                {% else %}
+		                                	<td>Inactive</td>
+		                                {% endif %}
+										<td><a href="{{ path('eifl_admin_administration',{'id_user': admin.id, 'func':'edit' }) }}">Edit</a> / <a href="{{ path('eifl_admin_administration',{'id_user': admin.id, 'func':'delete' }) }}" class="delete">Delete</a></td>
+									</tr>
+								{% endif %}
+							{% endfor %}
+						{% endif %}
+					</table>
+				</div>
+			</form>
+		</div>
+	</center>
+{% endblock %}
+{% block popup %}
+	<div id="close_button"></div>
+	{% if newform is defined %}
+	<div class="new_form form_admin">
+		<center>
+			<h3>Create New Admin</h3>
+
+			{{ form_start(newform) }}
+			    {{ form_errors(newform) }}
+
+			    <div>
+			        {{ form_label(newform.username) }}
+			        {{ form_errors(newform.username) }}
+			        {{ form_widget(newform.username) }}
+			    </div>
+
+			    <div>
+			        {{ form_label(newform.password) }}
+			        {{ form_errors(newform.password) }}
+			        {{ form_widget(newform.password) }}
+			    </div>
+
+			    <div>
+			        {{ form_label(newform.roles) }}
+			        {{ form_errors(newform.roles) }}
+			        {{ form_widget(newform.roles) }}
+			    </div>
+
+			    <div>
+			        {{ form_label(newform.enabled) }}
+			        {{ form_errors(newform.enabled) }}
+			        {{ form_widget(newform.enabled) }}
+			    </div>
+
+			    <div>
+			        {{ form_widget(newform.save) }}
+			    </div>
+			{{ form_widget(newform._token) }}
+			{{ form_end(newform) }}
+		</center>
+	</div>
+	{% endif %}
+	{% if editform is defined %}
+	<div class="edit_form form_admin">
+		<center>
+			<h3>Edit Admin</h3>
+
+			{{ form_start(editform) }}
+			    {{ form_errors(editform) }}
+
+			    <div>
+			        {{ form_label(editform.username) }}
+			        {{ form_errors(editform.username) }}
+			        {{ form_widget(editform.username) }}
+			    </div>
+
+			    <div>
+			        {{ form_label(editform.roles) }}
+			        {{ form_errors(editform.roles) }}
+			        {{ form_widget(editform.roles) }}
+			    </div>
+
+			    <div>
+			        {{ form_label(editform.enabled) }}
+			        {{ form_errors(editform.enabled) }}
+			        {{ form_widget(editform.enabled) }}
+			    </div>
+
+			    <div id='pass_edit'>
+			        {{ form_errors(editform.password) }}
+			        {{ form_widget(editform.password) }}
+			    </div>
+
+				<div><input type="checkbox" id="new_pass"> Change Password</div>
+				
+			    <div>
+			        {{ form_widget(editform.save) }}
+			    </div>
+			{{ form_widget(editform._token) }}
+			{{ form_end(editform) }}
+		</center>
+	</div>
+	{% endif %}
+{% endblock %}

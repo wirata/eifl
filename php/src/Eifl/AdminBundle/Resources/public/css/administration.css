@@ -1,0 +1,40 @@
+.administration_form{
+	width: 950px;
+	min-height: 350px;
+	background: rgba(48,164,227,0.51);
+	padding: 50px 10px 5px;
+}
+.admin_form p{
+	width:600px;
+}
+#close_button{
+	width: 30px;
+	height: 30px;
+	float:right;
+	background: url('../images/close.png') right top no-repeat;
+	background-size: 30px;
+}
+#pass_edit{
+	display: none;
+}
+.form_admin{
+	display:none;
+}
+.administration_table{
+	background: black;
+}
+.administration_table th{
+	background: rgba(29,228,107,0.95);
+	opacity: 0.9;
+	color:black;
+}
+.administration_table td{
+	background: white;
+	color:black;
+}
+.administration_table td a, .administration_table td a:visited{
+	color: blue;
+}
+.administration_table td a:hover{
+	color: gold;
+}

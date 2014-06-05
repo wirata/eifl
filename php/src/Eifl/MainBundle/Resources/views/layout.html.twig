@@ -1,0 +1,78 @@
+<html>
+	<head>
+		<title>{% block title %}{% endblock %}</title>
+		<link rel="stylesheet" type="text/css" href="{{ asset('bundles/eiflmain/css/base.css') }}">
+		<script type="text/javascript" src="{{ asset('components/jquery/jquery.js') }}"></script>
+		<script type="text/javascript" src="{{ asset('components/jquery-ui/ui/jquery-ui.js') }}"></script>
+		<script type="text/javascript" src="{{ asset('components/jquery-ui/ui/jquery.ui.menu.js') }}"></script>
+		{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_ADM') or is_granted('ROLE_TEACHER') %}
+		    <script>
+		        window.location="{{ path('eifl_admin_homepage') }}";
+		    </script>
+		{% elseif is_granted('ROLE_USER') %}
+		 	<script>
+		        window.location="{{ path('eifl_member_profile') }}";
+		    </script>
+		{% endif %}
+		<script>
+			$(function() {
+				$('.main_menu').menu({ position: { my: "left top", at: "left-2 top+50" } });
+			})
+		</script>
+	</head>
+	<body>
+		<div class="header">
+			<div id="logo"></div>
+			<div id="menu">
+				<ul class="main_menu">
+					<a href=""><li>Home</li></a>
+					<li>Our Programs
+						<ul class="drop_menu">
+							<a href=""><li>General English (<b>GE</b>)</li></a>
+							<a href=""><li>Englsih for Special Purposes (<b>ESP</b>)</li></a>
+							<a href=""><li>English for Children</li></a>
+							<a href=""><li>IGCSE Preparation</li></a>
+							<a href=""><li>SAT Preparation</li></a>
+						</ul>
+					</li>
+					<a href=""><li>Facilities</li></a>
+					<a href=""><li>Cooperation</li></a>
+					<a href=""><li>Contact US</li></a>
+				</ul>
+			</div>
+			<div id="login">
+				<a href="{{ path('fos_user_security_login') }}" style="color:blue;">Login</a>
+			</div>
+		</div>
+		<div class="main_body">
+			<div id="banner-left" class="banner">
+				<div>
+					<img src="{{ asset('bundles/eiflmain/images/paket.png') }}" width="133" height="166">
+				</div>
+			</div>
+			<script type='text/javascript'>
+				var el = $('.banner');
+				var elpos_original = el.offset().top;
+
+				$(window).scroll(function(){
+				    var elpos = el.offset().top;
+				    var windowpos = $(window).scrollTop();
+				    var finaldestination = windowpos;
+				    if(windowpos<elpos_original) {
+				        finaldestination = elpos_original;
+				        el.stop().animate({'top':100},500);
+				    } else {
+				        el.stop().animate({'top':windowpos+10},500);
+				    }
+			 	});
+			</script>
+			<!--<div class="main_content">-->
+			<div>
+				{% block content %}{% endblock %}
+			</div>
+		</div>
+		<div class="footer">
+			<p>Copyright &copy; EIFL Education Service 2014</p>
+		</div>
+	</body>
+</html>

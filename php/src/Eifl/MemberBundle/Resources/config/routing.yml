@@ -1,0 +1,26 @@
+eifl_member_profile:
+    pattern:  /profile
+    defaults: { _controller: EiflMemberBundle:Profile:index }
+
+eifl_member_post_prize:
+    pattern:  /getPrizePoint
+    defaults: { _controller: EiflMemberBundle:Profile:point }
+    methods: [POST]
+
+eifl_member_post_profile_image:
+    pattern:  /ChangeProfile
+    defaults: { _controller: EiflMemberBundle:Profile:image }
+    methods: [POST]
+
+eifl_member_score:
+    pattern:  /score
+    defaults: { _controller: EiflMemberBundle:Score:score }
+
+eifl_member_post_prize_check:
+    pattern:  /getPrizeCheck
+    defaults: { _controller: EiflMemberBundle:Profile:check }
+    methods: [POST]
+
+eifl_member_event:
+    pattern:  /event
+    defaults: { _controller: EiflMemberBundle:Event:event }

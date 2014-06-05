@@ -1,0 +1,195 @@
+{% extends 'EiflMemberBundle::layout.html.twig' %}
+
+{% block title 'Eifl - Member Profile' %}
+
+{% block javascripts %}
+	$(document).ready(function() {
+		$('#redeem_btn').click(function() {
+			$(".popup_window").show("fade");
+		})
+		$("#close_button").click(function() {
+			$(".popup_window").hide("fade");
+		});
+		$("#p_img_change").change(function() {
+			$('#form_p').submit();
+		});
+		$('.prize_field').change(function() {
+			var id_prize = $(this).val();
+			$.ajax({
+				url: "{{ path('eifl_member_post_prize') }}",
+				data: "id_prize="+id_prize,
+				type: "POST",
+				dataType:'json',
+				success: function(data) {
+					var point_req = data['point'] * $('.unit_field').val();
+					$('.point_field').val(point_req);
+				}
+			});
+		});
+		$('.unit_field').change(function() {
+			var id_prize = $('.prize_field').val();
+			$.ajax({
+				url: "{{ path('eifl_member_post_prize') }}",
+				data: "id_prize="+id_prize,
+				type: "POST",
+				dataType:'json',
+				success: function(data) {
+					var point_req = data['point'] * $('.unit_field').val();
+					$('.point_field').val(point_req);
+				}
+			});
+		});
+		$('#form_save').click(function() {
+			if($('.point_field').val() > {{ user.userMemberType.point }}){
+				alert('Point required is not enaugh!');
+				return false;
+			}
+			
+			$.ajax({
+				url: "{{ path('eifl_member_post_prize_check') }}",
+				type: "POST",
+				dataType:'json',
+				success: function(data) {
+					if(data['result']){
+						return true;
+					}
+					else{
+						alert("You still have pending requests!\nPlease wait until all request is processed!");
+						return false;
+					}
+				}
+			});
+		});
+	});
+{% endblock %}
+{% block content %}
+	<div>
+		<div id='main_profile'>
+			{% if user.userMemberType.path is null %}
+				<img src="{{ asset('bundles/eiflmain/images/default_profile_photo.png') }}" width="100" height="100">
+			{% else %}
+				{% if user.userMemberType.path starts with 'https:' %}
+					<img src="{{ user.userMemberType.path }}" width="100" height="100">
+				{% else %}
+					<img src="{{ asset('uploads/images/') }}{{ user.userMemberType.path }}" width="100" height="100">
+				{% endif %}
+			{% endif %}
+			<form enctype="multipart/form-data" id="form_p" method="post" action="{{ path('eifl_member_post_profile_image') }}">
+				<input type="file" name="p_img" accept="image/" title="Change Profile" id="p_img_change" style="opacity:0;position:absolute;width:90px;"/>
+			</form>
+			<label style="color:blue">Change Image</label><br/>
+			{% if user.facebookId is null %}
+				<a href="{{ path('hwi_oauth_service_redirect',{service:'facebook'}) }}">Connect Facebook</a>
+			{% else %}
+				<label>Connected to Facebook</label>
+			{% endif %}
+		</div>
+		<div id="main_info">
+			<table border="0" id="tbl_info_profile">
+				<tr>
+					<th>Name</th>
+					<td>{{ user.userMemberType.getCompleteName }}</td>
+				</tr>
+				<tr>
+					<th>Address</th>
+					<td>{{ user.userMemberType.address }}</td>
+				</tr>
+				<tr>
+					<th>Phone</th>
+					<td>{{ user.userMemberType.phone }}</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<div style="text-align:center;margin:10px;padding:30px 0px;">
+		<label id="point">Point : </label><label id="p_member">{{ user.userMemberType.point }}</label></br>
+		<button id="redeem_btn">Redeem Point</button>
+	</div>
+	<div style="width:100%;clear:both;">
+		<table>
+			<tr>
+				<th>Program</th>
+				<th>Level</th>
+				<th>Class</th>
+			</tr>
+			{% for detail in user.userMemberType.details %}
+				<tr>
+					<td>{{ detail.program.program }}</td>
+				</tr>
+			{% endfor %}
+		</table>
+	</div>
+{% endblock %}
+
+{% block popup %}
+	<div id="close_button"></div>
+	<p id="point_info">Point : <label>{{ user.userMemberType.point }}</label></p>
+	<div class="main_form">
+		<div class="redeem_form">
+			{% if redeem_form is defined %}
+				{{ form_start(redeem_form) }}
+					{{ form_errors(redeem_form) }}
+					<br/>
+					{{ form_label(redeem_form.prize) }}
+					{{ form_widget(redeem_form.prize,{'attr':{'class':'prize_field'}}) }}
+					{{ form_errors(redeem_form.prize) }}
+					<br/>
+					{{ form_label(redeem_form.unit) }}
+					{{ form_widget(redeem_form.unit,{'attr':{'class':'unit_field'}}) }}
+					{{ form_errors(redeem_form.unit) }}	
+					<br/>
+					{{ form_label(redeem_form.point) }}
+					{{ form_widget(redeem_form.point,{'attr':{'class':'point_field'}}) }}
+					{{ form_errors(redeem_form.point) }}
+					<br/>
+					{{ form_widget(redeem_form.save) }}
+					
+					{{ form_widget(redeem_form._token) }}
+				{{ form_end(redeem_form) }}
+			{% endif %}		
+		</div>
+		<div id="prize_list">
+			<h3>Prize List</h3>
+			<table border="0" id="p_list_tbl" width="335">
+				<tr>
+					<th>Image</th>
+					<th>Name</th>
+					<th>Point</th>
+					<th>Unit</th>
+				</tr>					
+				{% for prize in prize_list %}
+					<tr>
+						<td><img src="{{ asset('uploads/images/') }}{{ prize.path }}" width="100" height="100" ></td>
+						<td>{{ prize.name }}</td>
+						<td>{{ prize.point }}</td>
+						<td>{{ prize.unit }}</td>
+					</tr>
+				{% endfor %}
+			</table>
+		</div>
+		<div id="prize_summary">
+			<h3>Prize Summary</h3>
+			<table border="0" id="p_sum_tbl" width="335">
+				<tr>
+					<th>Date</th>
+					<th>Time</th>
+					<th>Item Name</th>
+					<th>Unit</th>
+					<th>Point</th>
+					<th>Status</th>
+				</tr>
+				{% for status in redeem_status %}
+					{% set total_point = status.unit * status.point %}
+					<tr>
+						<td>{{ status.requestDate.format("d-m-Y") }}</td>
+						<td>{{ status.requestDate.format("H:i") }}</td>
+						<td>{{ status.prize }}</td>
+						<td>{{ status.unit }}</td>
+						<td>{{ total_point }}</td>
+						<td>{{ status.status }}</td>
+					</tr>
+				{% endfor %}
+			</table>
+		</div>
+	</div>
+{% endblock %}

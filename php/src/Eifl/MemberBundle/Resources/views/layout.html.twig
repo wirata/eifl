@@ -1,0 +1,48 @@
+<html>
+	<head>
+		<title>{% block title %}{% endblock %}</title>
+		<link rel="stylesheet" href="{{ asset('bundles/eiflmember/css/base.css') }}">
+		<script type="text/javascript" src="{{ asset('components/jquery/jquery.js') }}"></script>
+		<script type="text/javascript" src="{{ asset('components/jquery-ui/ui/jquery-ui.js') }}"></script>
+		<script type="text/javascript" src="{{ asset('components/jquery-ui/ui/jquery.ui.menu.js') }}"></script>
+		{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_ADM') or is_granted('ROLE_TEACHER') %}
+		    <script>
+		        window.location="{{ path('eifl_admin_homepage') }}";
+		    </script>
+		{% endif %}
+		<script type="text/javascript">
+			{% block javascripts %}{% endblock %}
+		</script>
+	</head>
+	<body>
+		<div class='popup_window'>
+			<div class="popup_content">
+				{% block popup %}{% endblock %}
+			</div>
+		</div>
+		<div class="header">
+			<div id="logo"></div>
+			<div style="float:left;min-width:600px;width:70%;">
+				<div id="menu">
+					<ul class="menu">
+						<a href=""><li>Home</li></a>
+						<a href="{{ path('eifl_member_profile') }}"><li>Profile</li></a>
+						<a href="{{ path('eifl_member_score') }}"><li>Score</li></a>
+						<a href="{{ path('eifl_member_event') }}"><li>Event</li></a>
+					</ul>
+				</div>
+			</div>
+			<div id="info">
+			{% if is_granted('ROLE_USER') %}
+	            {{ 'layout.logged_in_as'|trans({'%username%': app.user.username}, 'FOSUserBundle') }} |
+	            <a href="{{ path('fos_user_security_logout') }}">
+	                {{ 'layout.logout'|trans({}, 'FOSUserBundle') }}
+	            </a>
+	        {% endif %}
+	   		</div>
+		</div>
+		<div class="member-body">
+			{% block content %}{% endblock %}
+		</div>
+	</body>
+</html>

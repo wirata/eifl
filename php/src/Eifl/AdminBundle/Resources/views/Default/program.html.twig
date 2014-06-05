@@ -1,0 +1,577 @@
+{% extends 'EiflAdminBundle::layout.html.twig' %}
+
+{% block title 'EIFL Admin Program' %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" type="text/css" href="{{ asset('bundles/eifladmin/css/administration.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('components/jquery-ui/themes/base/jquery.ui.tabs.css') }}">
+{% endblock %}
+
+{% block newscripts %}
+	<script src="{{ asset('bundles/eifladmin/js/levelcollection.js') }}"></script>
+{% endblock %}
+
+{% block javascripts %}
+	$(function() {
+		$('#tabs').tabs();
+	});
+	$(document).ready(function() {
+		{% if edit_p is defined  or edit_l is defined or select_T is defined or add_S is defined or edit_c is defined or edit_ls is defined or view_detail is defined %}
+			{% if edit_p is defined %}
+				$('#edit_program_form').show();
+			{% elseif edit_l is defined %}
+				$('#edit_level_form').show();
+			{% elseif select_T is defined %}
+				$('#select_teacher_form').show();
+			{% elseif add_S is defined %}
+				$('#add_student_form').show();
+			{% elseif edit_c is defined %}
+				$('#edit_class_form').show();
+			{% elseif edit_ls is defined %}
+				$('#edit_lesson_form').show();
+			{% elseif view_detail is defined %}
+				$('#view_detail_form').show();
+			{% endif %}
+			$(".popup_window").show("fade");
+		{% endif %}
+		$("#new_program").click(function() {
+			$("#new_program_form").show();
+			$(".popup_window").show("fade");
+		});
+		$("#delete_program").click(function() {
+			if(confirm("Are you sure want to delete this program?\nAll of the levels and classes will be deleted too.")){
+				var id = $('#form_id').val();
+				window.location="{{ path('eifl_admin_program') }}?id_program="+id+"&func=delete_program";
+			}
+		});
+		$("#new_class").click(function() {
+			$("#new_class_form").show();
+			$(".popup_window").show("fade");
+		});
+		$("#new_lesson").click(function() {
+			$("#new_lesson_form").show();
+			$(".popup_window").show("fade");
+		});
+		$("#new_level").click(function() {
+			$('.new_level_program').val($('.form_select_program').val());
+			$("#new_level_form").show();
+			$(".popup_window").show("fade");
+		});
+		$("#close_button").click(function() {
+			$(".popup_window").hide("fade");
+			$(".form_admin").hide();
+		});
+		$('#edit_program').click(function() {
+			var id_program = $('.form_select_program').val();
+			window.location="{{ path('eifl_admin_program') }}?id_program="+id_program+"&func=edit_program";
+		});
+		$('.form_select_program').change(function() {
+			if($(this).val()!=''){
+				$('#edit_program').show();
+				$('#new_level').show();
+			}
+			else{
+				$('#edit_program').hide();
+				$('#new_level').hide();
+			}
+			$('.new_program_data').remove();
+			var id_program = $(this).val();
+			$.ajax({
+				url: "{{ path('eifl_admin_post_program') }}",
+				data: "id_program="+id_program,
+				type: "POST",
+				dataType:'json',
+				success: function(data) {
+					var i = 0;
+					while(data){
+						var id = data[i]['id'];
+						var programlevel = data[i]['level'];
+						var classes = data[i]['classes'];
+						if(classes==''){
+							classes="none";
+						}
+							$('#level_table').append("<tr class='new_program_data' id='new_program_data_"+i+"'></tr>");
+						$("#new_program_data_"+i).html("<td>"+programlevel+"</td><td>"+classes+"</td><td><a href='{{ path('eifl_admin_program') }}?id_level="+id+"&func=edit_level'>Rename</a> / <a class='del_level' href='{{ path('eifl_admin_program') }}?id_level="+id+"&func=delete_level' class='level_del'>Delete</a></td>");
+						i++;
+					}
+				}
+			});
+		});
+		$('.form_select_level').change(function() {
+			$('.new_level_data').remove();
+			var id_level = $(this).val();
+			$.ajax({
+				url: "{{ path('eifl_admin_post_level') }}",
+				data: "id_level="+id_level,
+				type: "POST",
+				dataType:'json',
+				success: function(data) {
+					var i = 0;
+					while(data){
+						var id = data[i]['id'];
+						var classlevel = data[i]['class'];
+						var students = data[i]['students'];
+						$('#class_table').append("<tr class='new_level_data' id='new_class_data_"+i+"'></tr>");
+						$("#new_class_data_"+i).html("<td>"+classlevel+"</td><td>"+students+"</td><td><a href='{{ path('eifl_admin_program') }}?id_class="+id+"&func=edit_class'>Rename Class</a> / <a href='{{ path('eifl_admin_program') }}?id_class="+id+"&func=delete_class' class='class_del'>Delete Class</a> / <a href='{{ path('eifl_admin_program') }}?id_class="+id+"&func=class_detail'>View</a></td>");
+						i++;
+					}
+				}
+			});
+		});
+		$('.form_teacher_program').change(function() {
+			$('.teacher_program_opt').remove();
+			var id_level = $(this).val();
+			$.ajax({
+				url: "{{ path('eifl_admin_teacher_program') }}",
+				data: "id_level="+id_level,
+				type: "POST",
+				dataType:'json',
+				success: function(data) {
+					var i = 0;
+					while(data){
+						var id = data[i]['id'];
+						var classlevel = data[i]['class'];
+						$('#teacher_class').append("<option value='"+id+"' class='teacher_program_opt'>"+classlevel+"</option>");
+						i++;
+					}
+				}
+			});
+		});
+		$('.form_lesson_program').change(function() {
+			$('.new_lesson_data').remove();
+			var id_program = $(this).val();
+			$.ajax({
+				url: "{{ path('eifl_admin_post_lesson') }}",
+				data: "id_program="+id_program,
+				type: "POST",
+				dataType:'json',
+				success: function(data) {
+					var i = 0;
+					while(data){
+						var id = data[i]['id'];
+						var programlesson = data[i]['lesson'];
+						$('#lesson_table').append("<tr class='new_lesson_data' id='new_lesson_data_"+i+"'></tr>");
+						$("#new_lesson_data_"+i).html("<td>"+programlesson+"</td><td><a href='{{ path('eifl_admin_program') }}?id_lesson="+id+"&func=edit_lesson'>Rename Lesson</a> / <a href='{{ path('eifl_admin_program') }}?id_lesson="+id+"&func=delete_lesson' id='lesson_del'>Delete Lesson</a></td>");
+						i++;
+					}
+				}
+			});
+		});
+		$('#teacher_class').change(function() {
+			$('.new_teacher_data').remove();
+			var id_class = $(this).val();
+			$.ajax({
+				url: "{{ path('eifl_admin_post_teacher_class') }}",
+				data: "id_class="+id_class,
+				type: "POST",
+				dataType:'json',
+				success: function(data) {
+					var i = 0;
+					while(data){
+						var id = data[i]['id'];
+						var programlesson = data[i]['lesson'];
+						if(data[i]['teacher']==null){
+							var teacher = "none";
+						}
+						else{
+							var teacher = data[i]['teacher'];
+						}
+						$('#teacher_table').append("<tr class='new_teacher_data' id='new_teacher_data_"+i+"'></tr>");
+						$("#new_teacher_data_"+i).html("<td>"+programlesson+"</td><td>"+teacher+"</td><td><a href='{{ path('eifl_admin_program') }}?id_lesson="+id+"&id_class="+id_class+"&func=set_teacher'>Set Teacher</a> / <a href='{{ path('eifl_admin_program') }}?id_lesson="+id+"&id_class="+id_class+"&func=delete_teacher' id='class_del'>Delete Teacher</a></td>");
+						i++;
+					}
+				}
+			});
+		});
+	});
+{% endblock %}
+
+{% block admin_content %}
+	<center>
+		<div id="tabs">
+			<ul>
+				<li><a href="#tab_program">Program</a></li>
+				<li><a href="#tab_lesson">Lesson</a></li>
+				<li><a href="#tab_class">Class</a></li>
+				<li><a href="#tab_teacher">Teacher</a></li>
+			</ul>
+			<div id="tab_program">
+				<h3>Program</h3>
+				<div class="administration_form">
+					<form class="admin_form">
+						<p style="height:25px;margin-bottom:5px;text-align:left;width:600px;">
+							<label>Program :</label>
+							{{ form_widget(programform.program) }}
+							<input type="button" name="new_program" id="new_program" value="Create New Program" style="float:right;"/>
+							<input type="button" name="edit_program" id="edit_program" value="Edit" style="display:none;"/>
+							<input type="button" name="new_level" id="new_level" value="Create New Level" style="display:none;"/>
+						</p>
+						
+						<div>
+							<table class="administration_table" id="level_table" border="0" cellpadding="0" cellspacing="1" width="600">
+								<tr>
+									<th width="25%">Level</th>
+									<th width="55%">Classes</th>
+									<th width="20%">Action</th>
+								</tr>
+								
+							</table>
+						</div>
+					</form>
+				</div>
+			</div>
+			<div id="tab_class">
+				<h3>Class</h3>
+				<div class="administration_form">
+					<form class="admin_form">
+						<p style="height:25px;margin-bottom:5px;text-align:left;width:600px;">
+							<label>Program Level :</label>
+							{{ form_widget(levelform.program) }}
+							<input type="button" name="new_class" id="new_class" value="Create New Class"/>
+						</p>
+						
+						<div>
+							<table class="administration_table" id="class_table" border="0" cellpadding="0" cellspacing="1" width="600">
+								<tr>
+									<th width="25%">Class Name</th>
+									<th width="20%">Students</th>
+									<th width="55%">Action</th>
+								</tr>
+							</table>
+						</div>
+					</form>
+				</div>
+			</div>
+			<div id="tab_lesson">
+				<h3>Lesson</h3>
+				<div class="administration_form">
+					<form class="admin_form">
+						<p style="height:25px;margin-bottom:5px;text-align:left;width:600px;">
+							<label>Program:</label>
+							{{ form_widget(lessonform.program) }}
+							<input type="button" name="new_lesson" id="new_lesson" value="Create New Lesson"/>
+						</p>
+						
+						<div>
+							<table class="administration_table" id="lesson_table" border="0" cellpadding="0" cellspacing="1" width="600">
+								<tr>
+									<th width="50%">Lesson Name</th>
+									<th width="50%">Action</th>
+								</tr>
+							</table>
+						</div>
+					</form>
+				</div>
+			</div>
+			<div id="tab_teacher">
+				<h3>Teacher</h3>
+				<div class="administration_form">
+					<form class="admin_form">
+						<p style="height:25px;margin-bottom:5px;text-align:left;width:600px;">
+							<label>Program Level:</label>
+							{{ form_widget(teacherprogramform.program) }}
+
+							<label>Class:</label>
+							<select id="teacher_class">
+								<option value="" selected="selected">Choose a class</option>
+							</select>
+						</p>
+						
+						<div>
+							<table class="administration_table" id="teacher_table" border="0" cellpadding="0" cellspacing="1" width="600">
+								<tr>
+									<th width="30%">Lesson Name</th>
+									<th width="30%">Teacher Name</th>
+									<th width="40%">Action</th>
+								</tr>
+							</table>
+						</div>
+						
+					</form>
+				</div>
+			</div>
+		</div>
+	</center>
+{% endblock %}
+{% block popup %}
+	<div id="close_button"></div>
+	{% if new_program_form is defined %}	
+		<div id="new_program_form" class="new_form form_admin">
+			<center>
+				<h3>Create New Program</h3>
+
+				{{ form_start(new_program_form) }}
+				    {{ form_errors(new_program_form) }}
+
+				    <div>
+				        {{ form_label(new_program_form.id) }}
+				        {{ form_errors(new_program_form.id) }}
+				        {{ form_widget(new_program_form.id) }}
+				    </div>
+
+				    <div>
+				        {{ form_label(new_program_form.program) }}
+				        {{ form_errors(new_program_form.program) }}
+				        {{ form_widget(new_program_form.program) }}
+				    </div>
+
+				    <ul class="level" data-prototype="{{ form_widget(new_program_form.levels.vars.prototype)|e }}">
+					    {% for level in new_program_form.levels %}
+						    <li class="level_row">{{ form_row(level.level) }}</li>
+						{% endfor %}
+					</ul>
+				    
+				    <div>
+				        {{ form_widget(new_program_form.save) }}
+				    </div>
+				{{ form_widget(new_program_form._token) }}
+				</form>
+			</center>
+		</div>
+	{% endif %}
+	{% if new_class_form is defined %}	
+		<div id="new_class_form" class="new_form form_admin">
+			<center>
+				<h3>Create New Class</h3>
+
+				{{ form_start(new_class_form) }}
+				    {{ form_errors(new_class_form) }}
+
+				    <div>
+				        {{ form_label(new_class_form.level) }}
+				        {{ form_errors(new_class_form.level) }}
+				        {{ form_widget(new_class_form.level) }}
+				    </div>
+
+				    <ul class="class" data-prototype="{{ form_widget(new_class_form.class.vars.prototype)|e }}">
+					    {% for class in new_class_form.class %}
+						    <li class="level_row">{{ form_row(class.class) }}</li>
+						{% endfor %}
+					</ul>
+				    
+				    <div>
+				        {{ form_widget(new_class_form.save) }}
+				    </div>
+				{{ form_widget(new_class_form._token) }}
+				</form>
+			</center>
+		</div>
+	{% endif %}
+	{% if new_level_form is defined %}	
+		<div id="new_level_form" class="new_form form_admin">
+			<center>
+				<h3>Create New Level</h3>
+
+				{{ form_start(new_level_form) }}
+				    {{ form_errors(new_level_form) }}
+
+				    <div>
+				        {{ form_label(new_level_form.program) }}
+				        {{ form_errors(new_level_form.program) }}
+				        {{ form_widget(new_level_form.program) }}
+				    </div>
+
+				    <ul class="newlevel" data-prototype="{{ form_widget(new_level_form.levels.vars.prototype)|e }}">
+					    {% for level in new_level_form.levels %}
+						    <li class="level_row">{{ form_row(level.level) }}</li>
+						{% endfor %}
+					</ul>
+				    
+				    <div>
+				        {{ form_widget(new_level_form.save) }}
+				    </div>
+				{{ form_widget(new_level_form._token) }}
+				</form>
+			</center>
+		</div>
+	{% endif %}
+	{% if select_teacher_form is defined %}	
+		<div id="select_teacher_form" class="new_form form_admin">
+			<center>
+				<h3>Select Teacher</h3>
+
+				<p>Please select a teacher for lesson <span class="important">{{ lesson_name }}</span> in class <span class="important">{{ class_name }}</span></p>
+				{{ form_start(select_teacher_form) }}
+				    {{ form_errors(select_teacher_form) }}
+
+				    <div>
+				        {{ form_label(select_teacher_form.teacher) }}
+				        {{ form_errors(select_teacher_form.teacher) }}
+				        {{ form_widget(select_teacher_form.teacher) }}
+				    </div>
+				    
+				    <div>
+				        {{ form_widget(select_teacher_form.save) }}
+				    </div>
+				{{ form_widget(select_teacher_form._token) }}
+				</form>
+			</center>
+		</div>
+	{% endif %}
+	{% if add_student_form is defined %}	
+		<div id="add_student_form" class="new_form form_admin">
+			<center>
+				<h3>Add Students</h3>
+
+				{{ form_start(add_student_form) }}
+				    {{ form_errors(add_student_form) }}
+
+				    <div>
+				    	{{ form_label(add_student_form.member) }}
+				        {{ form_errors(add_student_form.member) }}
+				        {{ form_widget(add_student_form.member) }}
+				    </div>
+				    
+				    <div>
+				        {{ form_widget(add_student_form.save) }}
+				    </div>
+				{{ form_widget(add_student_form._token) }}
+				</form>
+			</center>
+		</div>
+	{% endif %}
+	{% if new_lesson_form is defined %}	
+		<div id="new_lesson_form" class="new_form form_admin">
+			<center>
+				<h3>Create New Lesson</h3>
+
+				{{ form_start(new_lesson_form) }}
+				    {{ form_errors(new_lesson_form) }}
+
+				    <div>
+				        {{ form_label(new_lesson_form.program) }}
+				        {{ form_errors(new_lesson_form.program) }}
+				        {{ form_widget(new_lesson_form.program) }}
+				    </div>
+
+				    <ul class="lesson" data-prototype="{{ form_widget(new_lesson_form.lessons.vars.prototype)|e }}">
+					    {% for lesson in new_lesson_form.lessons %}
+						    <li class="level_row">{{ form_row(lesson.lesson) }}</li>
+						{% endfor %}
+					</ul>
+				    
+				    <div>
+				        {{ form_widget(new_lesson_form.save) }}
+				    </div>
+				{{ form_widget(new_lesson_form._token) }}
+				</form>
+			</center>
+		</div>
+	{% endif %}
+	{% if edit_program_form is defined %}	
+		<div id="edit_program_form" class="edit_form form_admin">
+			<center>
+				<h3>Edit Program</h3>
+
+				{{ form_start(edit_program_form) }}
+				    {{ form_errors(edit_program_form) }}
+
+				    <div>
+				        {{ form_label(edit_program_form.id) }}
+				        {{ form_errors(edit_program_form.id) }}
+				        {{ form_widget(edit_program_form.id) }}
+				    </div>
+
+				    <div>
+				        {{ form_label(edit_program_form.program) }}
+				        {{ form_errors(edit_program_form.program) }}
+				        {{ form_widget(edit_program_form.program) }}
+				    </div>
+
+				    <div>
+				        {{ form_widget(edit_program_form.save) }}
+				        <input type="button" value="Delete" name="delete" id="delete_program"/>
+				    </div>
+				{{ form_widget(edit_program_form._token) }}
+				</form>
+			</center>
+		</div>
+	{% endif %}
+	{% if edit_class_form is defined %}	
+		<div id="edit_class_form" class="edit_form form_admin">
+			<center>
+				<h3>Edit Program</h3>
+
+				{{ form_start(edit_class_form) }}
+				    {{ form_errors(edit_class_form) }}
+
+				    <div>
+				        {{ form_label(edit_class_form.class) }}
+				        {{ form_errors(edit_class_form.class) }}
+				        {{ form_widget(edit_class_form.class) }}
+				    </div>
+
+				    <div>
+				        {{ form_widget(edit_class_form.save) }}
+				    </div>
+				{{ form_widget(edit_class_form._token) }}
+				</form>
+			</center>
+		</div>
+	{% endif %}
+	{% if edit_lesson_form is defined %}	
+		<div id="edit_lesson_form" class="edit_form form_admin">
+			<center>
+				<h3>Edit Lesson</h3>
+
+				{{ form_start(edit_lesson_form) }}
+				    {{ form_errors(edit_lesson_form) }}
+
+				    <div>
+				        {{ form_label(edit_lesson_form.lesson) }}
+				        {{ form_errors(edit_lesson_form.lesson) }}
+				        {{ form_widget(edit_lesson_form.lesson) }}
+				    </div>
+
+				    <div>
+				        {{ form_widget(edit_lesson_form.save) }}
+				    </div>
+				{{ form_widget(edit_lesson_form._token) }}
+				</form>
+			</center>
+		</div>
+	{% endif %}
+	{% if edit_level_form is defined %}
+		<div id="edit_level_form" class="edit_form form_admin">
+			<center>
+				<h3>Edit Level</h3>
+
+				{{ form_start(edit_level_form) }}
+				    {{ form_errors(edit_level_form) }}
+
+				    <div>
+				        {{ form_label(edit_level_form.level) }}
+				        {{ form_errors(edit_level_form.level) }}
+				        {{ form_widget(edit_level_form.level) }}
+				    </div>
+
+				    <div>
+				        {{ form_widget(edit_level_form.save) }}
+				        <input type="button" value="Delete" name="delete" id="delete_level"/>
+				    </div>
+				{{ form_widget(edit_level_form._token) }}
+				</form>
+			</center>
+		</div>
+	{% endif %}
+	{% if detail_c is defined %}
+		<div id="view_detail_form" class="edit_form form_admin">
+			<center>
+				<h3>Detail Class {% if detail_c.0 is defined %}{{ detail_c.0.class.class }}{% endif %}</h3>
+
+				<table class="administration_table" id="teacher_table" border="0" cellpadding="0" cellspacing="1" width="600" style="background:darkblue;">
+					<tr>
+						<th width="60%">Member Name</th>
+						<th width="40%">Action</th>
+					</tr>
+					{% for detail in detail_c %}
+						<tr>
+							<td>{{ detail.member.firstname }} {{ detail.member.lastname }}</td>
+							<td><a href="{{ path('eifl_admin_program') }}?id_student={{ detail.member.id }}&id_class={{ detail.class.id }}&func=remove_student">Remove Student</a></td>
+						</tr>
+					{% endfor %}
+				</table>
+			</center>
+		</div>
+	{% endif %}
+{% endblock %}

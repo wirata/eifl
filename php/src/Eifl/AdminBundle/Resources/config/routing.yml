@@ -1,0 +1,78 @@
+eifl_admin_homepage:
+    pattern:  /
+    defaults: { _controller: EiflAdminBundle:Default:index }
+#admin routing
+eifl_admin_administration:
+    pattern:  /administration
+    defaults: { _controller: EiflAdminBundle:Admin:administration }
+#member routing
+eifl_admin_usermember:
+    pattern:  /usermember
+    defaults: { _controller: EiflAdminBundle:Member:usermember }
+#program routing
+eifl_admin_program:
+    pattern:  /program
+    defaults: { _controller: EiflAdminBundle:Program:program }
+
+eifl_admin_post_level:
+    pattern:  /getClassLevel
+    defaults: { _controller: EiflAdminBundle:Program:getClassLevel }
+    methods: [POST]
+
+eifl_admin_post_program:
+    pattern:  /getLevelProgram
+    defaults: { _controller: EiflAdminBundle:Program:getLevelProgram }
+    methods: [POST]
+
+eifl_admin_teacher_program:
+    pattern:  /getTeacherProgram
+    defaults: { _controller: EiflAdminBundle:Program:getTeacherProgram }
+    methods: [POST]
+
+eifl_admin_post_teacher_class:
+    pattern:  /getTeacherClass
+    defaults: { _controller: EiflAdminBundle:Program:getTeacherClass }
+    methods: [POST]
+
+eifl_admin_post_lesson:
+    pattern:  /getLessonProgram
+    defaults: { _controller: EiflAdminBundle:Program:getLessonProgram }
+    methods: [POST]
+#score routing
+eifl_admin_class_adm:
+    pattern:  /Class
+    defaults: { _controller: EiflAdminBundle:ClassManage:manage }
+#score routing
+eifl_admin_score:
+    pattern:  /score
+    defaults: { _controller: EiflAdminBundle:Score:score }
+
+eifl_admin_post_program_class:
+    pattern:  /getProgramClass
+    defaults: { _controller: EiflAdminBundle:Score:programClass }
+    methods: [POST]
+#prize routing
+eifl_admin_prize:
+    pattern:  /prize
+    defaults: { _controller: EiflAdminBundle:Prize:prize }
+#prizeReq routing
+eifl_admin_prizeReq:
+    pattern:  /prizeRequest
+    defaults: { _controller: EiflAdminBundle:PrizeReq:prizeReq }
+#point routing
+eifl_admin_point:
+    pattern:  /point
+    defaults: { _controller: EiflAdminBundle:Point:point }
+
+eifl_admin_post_point_member:
+    pattern:  /getMember
+    defaults: { _controller: EiflAdminBundle:Point:pointMember }
+    methods: [POST]
+#page routing
+eifl_admin_page:
+    pattern:  /page
+    defaults: { _controller: EiflAdminBundle:Page:page }
+#competition routing
+eifl_admin_competition:
+    pattern:  /competition
+    defaults: { _controller: EiflAdminBundle:Competition:competition }

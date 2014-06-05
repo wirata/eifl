@@ -1,0 +1,49 @@
+{% extends 'EiflMemberBundle::layout.html.twig' %}
+
+{% block title 'Eifl - Member Profile' %}
+
+{% block javascripts %}
+	$(function() {
+		$('.tab').tabs();
+	});
+	$(document).ready(function() {
+		$("#close_button").click(function() {
+			$(".popup_window").hide("fade");
+		});
+	});
+{% endblock %}
+{% block content %}
+	<div>
+		<div class="tab">
+			<ul>
+				{% for detail in user.userMemberType.details %}
+					<li style="display:inline;"><a href="#tab_{{ detail.class.id }}">{{ detail.class.class }}</a></li>
+				{% endfor %}
+			</ul>
+			{% for detail in user.userMemberType.details %}
+				<div id="tab_{{ detail.class.id }}">
+					<label>Program : {{ detail.program.program }}</label>
+					<br/>
+					<label>Level : {{ detail.class.level.level }}</label>
+					<table border="0">
+						<tr>
+							<th>Lesson</th>
+							<th>Score</th>
+						</tr>
+						{% for report in detail.reports %}
+							<tr>
+								<td>{{ report.lesson.lesson }}</td>
+								<td>{{ report.score }}</td>
+							</tr>
+						{% endfor %}
+					</table>
+				</div>
+			{% endfor %}
+		</div>
+	</div>
+{% endblock %}
+
+{% block popup %}
+	<div id="close_button"></div>
+	</div>
+{% endblock %}

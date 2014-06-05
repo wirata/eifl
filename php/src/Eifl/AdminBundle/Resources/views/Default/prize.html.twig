@@ -1,0 +1,135 @@
+{% extends 'EiflAdminBundle::layout.html.twig' %}
+
+{% block title 'EIFL Admin Prize' %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" type="text/css" href="{{ asset('bundles/eifladmin/css/administration.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+	$(document).ready(function() {
+		{% if edit_p is defined %}
+			$('.edit_form').show();
+    		$(".popup_window").show("fade");
+		{% endif %}
+		$("#close_button").click(function() {
+			$(".popup_window").hide("fade");
+			$(".form_admin").hide();
+		});
+		$('.rm_p').click(function() {
+			if(!confirm('Are you sure to remove this prize?')){
+				return false;
+			}
+		});
+	});
+{% endblock %}
+
+{% block admin_content %}
+	<center>
+		<h3>Prize</h3>
+		<div class="administration_form prize_form">
+			{{ form_start(new_prize_form) }}
+				{{ form_errors(new_prize_form) }}
+
+				<div>
+					{{ form_label(new_prize_form.image) }}
+				    {{ form_errors(new_prize_form.image) }}
+				    {{ form_widget(new_prize_form.image) }}
+				</div>
+
+				<div>
+					{{ form_label(new_prize_form.name) }}
+				    {{ form_errors(new_prize_form.name) }}
+				    {{ form_widget(new_prize_form.name) }}
+				</div>
+
+				<div>
+					{{ form_label(new_prize_form.point) }}
+				    {{ form_errors(new_prize_form.point) }}
+				    {{ form_widget(new_prize_form.point) }}
+				</div>
+
+				<div>
+					{{ form_label(new_prize_form.unit) }}
+				    {{ form_errors(new_prize_form.unit) }}
+				    {{ form_widget(new_prize_form.unit) }}
+				</div>
+
+				<div>
+					{{ form_widget(new_prize_form.save) }}
+				</div>
+				{{ form_widget(new_prize_form._token) }}
+			{{ form_end(new_prize_form) }}
+			<div>
+				<table class="administration_table" border="0" cellpadding="0" cellspacing="1" width="600">
+					<tr>
+						<th>No</th>
+						<th>Image</th>
+						<th>Name</th>
+						<th>Point</th>
+						<th>Unit</th>
+						<th>Action</th>
+					</tr>
+					{% if prize_list is defined %}
+						{% set i = 1 %}
+						{% for prize in prize_list %}
+							{% if prize != null %}
+								<tr>
+									<td style="text-align:center;">{{ i }}</td>
+									<td style="text-align:center;"><img src="{{ asset('uploads/images/') }}{{ prize.path }}" width="50px" height="50px"></td>
+									<td>{{ prize.name }}</td>
+									<td style="text-align:center;">{{ prize.point }}</td>
+									<td style="text-align:center;">{{ prize.unit }}</td>
+									<td style="text-align:center;"><a href="{{ path('eifl_admin_prize') }}?id_prize={{ prize.id }}&func=edit_prize">Edit</a>/<a href="{{ path('eifl_admin_prize') }}?id_prize={{ prize.id }}&func=rm_prize" class='rm_p'>Remove</a></td>
+								</tr>
+								{% set i = i + 1 %}
+							{% endif %}
+						{% endfor %}
+					{% endif %}
+				</table>
+			</div>
+		</div>
+	</center>
+{% endblock %}
+
+{% block popup %}
+	<div id="close_button"></div>
+	{% if edit_form is defined %}
+	<div class="edit_form form_admin">
+		<center>
+			<h3>Edit Prize</h3>
+
+			{{ form_start(edit_form) }}
+			    {{ form_errors(edit_form) }}
+
+			    <div>
+					{{ form_row(edit_form.image,{'required':false}) }}
+				</div>
+
+				<div>
+					{{ form_label(edit_form.name) }}
+				    {{ form_errors(edit_form.name) }}
+				    {{ form_widget(edit_form.name) }}
+				</div>
+
+				<div>
+					{{ form_label(edit_form.point) }}
+				    {{ form_errors(edit_form.point) }}
+				    {{ form_widget(edit_form.point) }}
+				</div>
+
+				<div>
+					{{ form_label(edit_form.unit) }}
+				    {{ form_errors(edit_form.unit) }}
+				    {{ form_widget(edit_form.unit) }}
+				</div>
+
+				<div>
+					{{ form_widget(edit_form.save) }}
+				</div>
+			{{ form_widget(edit_form._token) }}
+			{{ form_end(edit_form) }}
+		</center>
+	</div>
+	{% endif %}
+{% endblock %}

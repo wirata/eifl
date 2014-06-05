@@ -1,0 +1,7 @@
+parameters:
+    eifl_main_userprovider.class: Eifl\MainBundle\Security\Core\User\FOSUBUserProvider
+
+services:
+    eifl_main_userprovider:
+        class: %eifl_main_userprovider.class%
+        arguments: [@fos_user.user_manager, {facebook: facebookId}]

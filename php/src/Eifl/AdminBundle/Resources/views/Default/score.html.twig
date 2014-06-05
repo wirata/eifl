@@ -1,0 +1,130 @@
+{% extends 'EiflAdminBundle::layout.html.twig' %}
+
+{% block title 'EIFL Admin Program' %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" type="text/css" href="{{ asset('bundles/eifladmin/css/administration.css') }}">
+{% endblock %}
+{% block javascripts %}
+	$(document).ready(function() {
+		{% if set_score is defined %}
+			$('#set_score_form').show();
+			$(".popup_window").show("fade");
+		{% endif %}
+		$("#new_program").click(function() {
+			$("#program_popup").show();
+			$(".popup_window").show("fade");
+		});
+		$("#new_class").click(function() {
+			$("#class_popup").show();
+			$(".popup_window").show("fade");
+		});
+		$("#close_button").click(function() {
+			$(".popup_window").hide("fade");
+			$("#program_popup").hide();
+			$("#class_popup").hide();
+		});
+		$("#teacher_class").change(function() {
+			$('.new_score_data').remove();
+			$('#p_name').html("");
+			$("#lesson_name").html("");
+			var id_class = $(this).val();
+			$.ajax({
+				url: "{{ path('eifl_admin_post_program_class') }}",
+				data: "id_class="+id_class,
+				type: "POST",
+				dataType:'json',
+				success: function(data) {
+					$('#p_name').html(data['program_name']);
+					var lessons = [];
+					var id_class = data['id_class'];
+					var i = 0;var j = 0;
+					while(data['lessons'][j]){
+						lessons[j] = data['lessons'][j]['name'];
+						j++;
+					}
+					$("#lesson_name").html(lessons.join(','));
+					if(lessons.length>1){
+						$('.rowspan').attr('rowspan','2');
+						$('.colspan').attr('colspan',lessons.length);
+						$('#score_tbl').append("<tr class='new_score_data' id='lesson'></tr>");
+						for(var h=0; h<lessons.length;h++){
+							$('#lesson').append("<th>"+lessons[h]+"</th>");
+						}
+					}
+					else{
+						$('.rowspan').attr('rowspan','1');
+						$('.colspan').attr('colspan','1');
+					}
+					while(data['students'][i]){
+						var id_student = data['students'][i]['id'];
+						$("#score_tbl").append("<tr class='new_score_data' id='new_score_data_"+i+"'></tr>");
+						$("#new_score_data_"+i).append("<td class='student_name'>"+data['students'][i]['name']+"</td>");
+						for(var k=0;k<j;k++){
+							$("#new_score_data_"+i).append("<td style='text-align:center;'><a href='{{ path('eifl_admin_score') }}?id_student="+id_student+"&id_lesson="+data['lessons'][k]['id']+"&id_class="+id_class+"&func=set_score'>"+data['students'][i]['score'][data['lessons'][k]['name']]+"</a></td>");
+						}
+						i++;
+					}				
+				}
+			});
+		});
+	});
+{% endblock %}
+
+{% block admin_content %}
+	<center>
+		<h3>Score</h3>
+		<div class="administration_form">
+			<form class="admin_form">
+				<p style="height:25px;margin-bottom:5px;text-align:left;">
+					<label>Class :</label>
+					<select id="teacher_class">
+						<option value="" selected="selected">Select Class</option>
+						{% for class in class_taken %}
+							<option value="{{ class.id }}">{{ class.class }}</option>
+						{% endfor %}
+					</select>
+					
+					<span style="float:right;width:300px;">Program : <span id="p_name"></span></span>
+
+				</p>
+				<p style="height:25px;margin-bottom:5px;text-align:left;">
+					<span style="float:right;width:300px;">Lesson : <span id="lesson_name"></span></span>
+				</p>
+				<div>
+					<table class="administration_table" id="score_tbl" border="0" cellpadding="0" cellspacing="1" width="600" style="background:darkblue;">
+						<tr>
+							<th class="rowspan">Name</th>
+							<th class="colspan">Score</th>
+						</tr>
+					</table>
+				</div>
+			</form>
+		</div>
+	</center>
+{% endblock %}
+{% block popup %}
+	<div id="close_button"></div>
+	{% if set_score_form is defined %}	
+		<div id="set_score_form" class="new_form form_admin">
+			<center>
+				<h3>Set Student Score</h3>
+
+				{{ form_start(set_score_form) }}
+				    {{ form_errors(set_score_form) }}
+
+				    <div>
+				        {{ form_label(set_score_form.score) }}
+				        {{ form_errors(set_score_form.score) }}
+				        {{ form_widget(set_score_form.score) }}
+				    </div>
+				    
+				    <div>
+				        {{ form_widget(set_score_form.submit) }}
+				    </div>
+				{{ form_widget(set_score_form._token) }}
+				</form>
+			</center>
+		</div>
+	{% endif %}
+{% endblock %}
